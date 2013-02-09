@@ -11,7 +11,7 @@
 
 @implementation SPOFlickrEngine
 
-+ (SPOFlickrEngine *)sharedClient {
++ (instancetype)sharedClient {
     static SPOFlickrEngine *_sharedClient = nil;
     static dispatch_once_t oncePredicate;
     dispatch_once(&oncePredicate, ^{
@@ -20,7 +20,7 @@
     return _sharedClient;
 }
 
-- (id)initWithBaseURL:(NSURL *)url {
+- (instancetype)initWithBaseURL:(NSURL *)url {
     self = [super initWithBaseURL:url];
     if (!self) {
         return nil;
