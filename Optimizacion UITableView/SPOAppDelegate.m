@@ -13,6 +13,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    self.flickrEngine = [[SPOFlickrEngine alloc] initWithHostName:@"api.flickr.com"];
+    [self.flickrEngine useCache];
+    
+    [UIImageView setDefaultEngine:self.flickrEngine];
+    
     return YES;
 }
 

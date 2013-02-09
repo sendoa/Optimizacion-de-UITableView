@@ -7,7 +7,7 @@
 //
 
 #import "SPOFlickrImageCell.h"
-#import "UIImageView+AFNetworking.h"
+
 
 @interface SPOFlickrImageCell ()
 
@@ -34,13 +34,18 @@
     // Configure the view for the selected state
 }
 
+- (void)prepareForReuse
+{
+    self.fotoImageView.image = nil;
+}
+
 - (void)setFlickrImageData:(NSDictionary *)imageData
 {
     self.tituloLabel.text = imageData[@"title"];
     NSString *urlImagen = [NSString stringWithFormat:@"http://farm%@.static.flickr.com/%@/%@_%@_s.jpg",
                            imageData[@"farm"], imageData[@"server"],
                            imageData[@"id"], imageData[@"secret"]];
-    [self.fotoImageView setImageWithURL:[NSURL URLWithString:urlImagen] placeholderImage:nil];
+    [self.fotoImageView setImageFromURL:[NSURL URLWithString:urlImagen] placeHolderImage:nil];
 }
 
 @end

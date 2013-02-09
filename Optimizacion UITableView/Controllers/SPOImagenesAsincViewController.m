@@ -30,10 +30,10 @@
 - (void)viewDidLoad
 {
     // Obtenemos las imágenes de Flickr de la red
-    [[SPOFlickrEngine sharedClient] imagesForTag:@"bilbao" completionHandler:^(NSArray *imageURLs) {
+    [ApplicationDelegate.flickrEngine imagesForTag:@"bilbao" completionHandler:^(NSArray *imageURLs) {
         self.imagenesDeFlickr= imageURLs;
         [self.tableView reloadData];
-    } errorHandler:^(AFHTTPRequestOperation *operation, NSError *error) {
+    } errorHandler:^(MKNetworkOperation *operation, NSError *error) {
         
     }];
 }

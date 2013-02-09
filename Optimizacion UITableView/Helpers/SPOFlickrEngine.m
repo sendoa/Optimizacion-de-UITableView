@@ -7,7 +7,6 @@
 //
 
 #import "SPOFlickrEngine.h"
-#import "AFJSONRequestOperation.h"
 
 @implementation SPOFlickrEngine
 
@@ -15,34 +14,25 @@
     static SPOFlickrEngine *_sharedClient = nil;
     static dispatch_once_t oncePredicate;
     dispatch_once(&oncePredicate, ^{
-        _sharedClient = [[self alloc] initWithBaseURL:[NSURL URLWithString:@"http://api.flickr.com/"]];
+        _sharedClient = [[self alloc] initWithHostName:@"api.flickr.com"];
     });
     return _sharedClient;
 }
 
-- (instancetype)initWithBaseURL:(NSURL *)url {
-    self = [super initWithBaseURL:url];
-    if (!self) {
-        return nil;
-    }
-    
-    // Queremos trabajar con JSON
-    [self registerHTTPOperationClass:[AFJSONRequestOperation class]];
-    
-    // Accept HTTP Header; see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
-	[self setDefaultHeader:@"Accept" value:@"application/json"];
-    
-    return self;
-}
-
 - (void)imagesForTag:(NSString *)tag completionHandler:(FlickrImagesResponseBlock)responseBlock errorHandler:(SPORequestFailureBlock)errorBlock
 {
-    [self getPath:FLICKR_IMAGE_URL(tag) parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSArray *imagesFromResponse = [responseObject valueForKeyPath:@"photos.photo"];
-        responseBlock(imagesFromResponse);
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        errorBlock(operation, error);
+    MKNetworkOperation *operation = [self operationWithPath:FLICKR_IMAGE_URL(tag)];
+    [operation addCompletionHandler:^(MKNetworkOperation *completedOperation) {
+        [completedOperation responseJSONWithCompletionHandler:^(id jsonObject) {
+            NSArray *imagesFromResponse = [jsonObject valueForKeyPath:@"photos.photo"];
+            NSLog(@"%@", imagesFromResponse);
+            responseBlock(imagesFromResponse);
+        }];
+    } errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
+        errorBlock(completedOperation, error);
     }];
+    
+    [self enqueueOperation:operation];
 }
 
 @end
